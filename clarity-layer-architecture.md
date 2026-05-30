@@ -122,5 +122,6 @@ export interface ClarityData {
 - **Why the panel is attached to the message card**: Attaching the panel directly to the specific conversational turn maintains strict temporal context. If it were a global sidebar, scrolling up to read previous turns would disconnect the user from the assumptions the AI made at that specific point in time.
 
 ## 11. Deployment Strategy
-- **Frontend Infrastructure**: The Next.js client-side application (UI components, styling, and session management) will be deployed on **Vercel** to leverage its optimized edge network and seamless Next.js integration.
-- **Backend Infrastructure**: The core AI orchestration, data ingestion, and API routes will be decoupled and hosted on **Streamlit**. This separation of concerns allows the heavier backend processes to run independently of the Vercel edge environment.
+- **Frontend & Backend Hosting**: The entire unified Next.js application is deployed on **Vercel**.
+  - **Frontend Assets**: HTML, React components, and styling are served via Vercel's Edge Network for global performance.
+  - **API Routes (Backend)**: The chat (`/api/chat`) and clarity analysis (`/api/clarity`) endpoints are run as serverless functions on Vercel, removing the need for a separate server infrastructure. Environment variables (`GROQ_API_KEY`, `TAVILY_API_KEY`) are configured directly in the Vercel dashboard.
