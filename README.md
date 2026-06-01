@@ -16,10 +16,16 @@
 
 ## 🌟 Core Features
 
-### 1. Confidence Underlines
-* **Sentence-Level Uncertainty**: Sentences containing claims where the AI is less certain (estimated, outdated, or unverifiable info) are underlined in amber.
-* **Inline Popovers**: Clicking any underline opens a floating popover detailing exactly why the AI flagged that claim.
-* **Granular Feedback**: Users can mark flags as verified (turning the underline green) or dismiss them.
+### 1. Confidence Flags (Three-Level System)
+* **Sentence-Level Uncertainty**: Sentences containing claims where the AI is less certain are underlined with confidence-level-specific styling:
+  * 🔴 **Critical** — Load-bearing claim; conclusion changes if wrong. Solid red underline.
+  * 🟡 **Low** — Supporting claim; relevant but not the hinge point. Solid amber underline.
+  * ⚪ **Moderate** — Context or colour; output remains valid even if wrong. Dashed amber underline.
+* **Verification Pointers**: Each flag includes a specific, actionable source (report, database, or search query) the user can consult to verify the claim. Displayed as a "Verify via" inset box.
+* **Dependency Chains**: Flags can reference other flags via `depends_on`, forming parent-child trees. Child flags are rendered indented beneath their parent with a "depends on above" label.
+* **Summary Bar**: Shows total flag count and, if any are critical: "· N critical — verify before acting" in red.
+* **Inline Popovers**: Clicking any underline opens a floating popover showing the confidence level (with colored dot), the reason, and the verification pointer.
+* **Granular Feedback**: Users can mark flags as verified (turning the underline green) or dismiss them as not helpful.
 
 ### 2. Context Assumptions Tab (Redesigned Flow)
 * **Impact Labels**: Surfaced assumptions show their impact level (`HIGH`, `MEDIUM`, or `LOW`) based on how heavily they shaped the response structure or framing.

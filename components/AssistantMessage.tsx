@@ -60,12 +60,19 @@ export default function AssistantMessage({
 
               if (before) nextSegments.push(before);
 
-              // Check user feedback styling
-              let decorationClass = "border-b-2 border-[#F59E0B] hover:bg-[#FFFBEB] dark:hover:bg-[#D4881E]/15";
+              // Determine underline style based on confidence level
+              let decorationClass: string;
               if (flag.userFeedback === 'verified') {
                 decorationClass = "border-b-2 border-green-600 hover:bg-green-50/70 dark:hover:bg-green-500/15";
               } else if (flag.userFeedback === 'not_helpful') {
                 decorationClass = "border-b border-dashed border-[#D1D1CF] dark:border-[#3A3A38] opacity-60";
+              } else if (flag.confidence_level === 'critical') {
+                decorationClass = "border-b-2 border-solid border-red-500 hover:bg-red-50 dark:hover:bg-red-950";
+              } else if (flag.confidence_level === 'low') {
+                decorationClass = "border-b-2 border-solid border-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950";
+              } else {
+                // moderate (default)
+                decorationClass = "border-b-2 border-dashed border-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950";
               }
 
               nextSegments.push(

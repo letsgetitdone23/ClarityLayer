@@ -361,6 +361,9 @@ export function useChat() {
           id: f.id || `f-${index}-${Math.random().toString(36).substring(4)}`,
           sentence: f.sentence,
           reason: f.reason,
+          confidence_level: f.confidence_level || 'moderate',
+          verification_pointer: f.verification_pointer || '',
+          depends_on: f.depends_on || null,
           startIndex: startIndex !== -1 ? startIndex : 0,
           endIndex: startIndex !== -1 ? startIndex + f.sentence.length : 0,
         };
@@ -616,6 +619,9 @@ export function useChat() {
           id: f.id || `f-${index}-${Math.random().toString(36).substring(4)}`,
           sentence: f.sentence,
           reason: f.reason,
+          confidence_level: f.confidence_level || 'moderate',
+          verification_pointer: f.verification_pointer || '',
+          depends_on: f.depends_on || null,
           startIndex: startIndex !== -1 ? startIndex : 0,
           endIndex: startIndex !== -1 ? startIndex + f.sentence.length : 0,
         };

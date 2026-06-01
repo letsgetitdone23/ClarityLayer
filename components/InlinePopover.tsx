@@ -11,6 +11,25 @@ interface InlinePopoverProps {
   onMarkVerified?: (flagId: string) => void;
 }
 
+// Confidence level visual config for the popover
+const levelConfig = {
+  critical: {
+    dotColor: 'bg-red-500',
+    label: 'Critical',
+    labelColor: 'text-red-600 dark:text-red-400',
+  },
+  low: {
+    dotColor: 'bg-amber-500',
+    label: 'Should verify',
+    labelColor: 'text-amber-600 dark:text-amber-400',
+  },
+  moderate: {
+    dotColor: 'bg-gray-400',
+    label: 'Worth checking',
+    labelColor: 'text-gray-500 dark:text-gray-400',
+  },
+};
+
 export default function InlinePopover({
   flag,
   x,
@@ -20,6 +39,8 @@ export default function InlinePopover({
   onMarkVerified,
 }: InlinePopoverProps) {
   const popoverRef = useRef<HTMLDivElement>(null);
+  const level = flag.confidence_level || 'moderate';
+  const config = levelConfig[level];
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -64,6 +85,14 @@ export default function InlinePopover({
         </button>
       </div>
 
+      {/* Confidence level indicator */}
+      <div className={`flex items-center gap-1.5 mb-2 ${config.labelColor}`}>
+        <span className={`w-2 h-2 rounded-full ${config.dotColor}`} />
+        <span className="text-[11px] font-semibold uppercase tracking-wide">
+          {config.label}
+        </span>
+      </div>
+
       {/* Flagged sentence */}
       <div className="text-[#6B6B6A] dark:text-[#9B9B99] italic line-clamp-2 my-2 leading-relaxed">
         &ldquo;{flag.sentence}&rdquo;
@@ -75,6 +104,18 @@ export default function InlinePopover({
       <div className="text-[#1A1A19] dark:text-[#F0EFEC] font-medium my-2 leading-relaxed">
         {flag.reason}
       </div>
+
+      {/* Verification pointer */}
+      {flag.verification_pointer && (
+        <div className="bg-gray-50 dark:bg-[#1F1F1E] rounded-md border border-gray-200 dark:border-[#3A3A38] p-2 my-2">
+          <span className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-gray-500 font-medium">
+            Verify via
+          </span>
+          <p className="text-[12px] text-[#1A1A19] dark:text-[#F0EFEC] mt-0.5 leading-relaxed">
+            {flag.verification_pointer}
+          </p>
+        </div>
+      )}
 
       <div className="h-px bg-[#E5E5E3] dark:bg-[#3A3A38] my-2" />
 
@@ -100,7 +141,7 @@ export default function InlinePopover({
           className="flex items-center gap-1 py-1 px-2.5 rounded bg-amber-50 dark:bg-[#1F1F1E] border border-amber-200 dark:border-[#3A3A38] text-amber-800 dark:text-[#9B9B99] hover:bg-amber-100 dark:hover:bg-[#2F2F2D] hover:text-amber-900 dark:hover:text-[#F0EFEC] transition-colors duration-150 font-medium text-xs shadow-sm"
         >
           <Check className="w-3.5 h-3.5 text-amber-700 dark:text-[#D4881E]" />
-          Helpful
+          ✓ Helpful
         </button>
       </div>
 

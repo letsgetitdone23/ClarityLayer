@@ -21,6 +21,9 @@ export interface ConfidenceFlag {
   id: string
   sentence: string             // exact sentence from response text
   reason: string               // one-line explanation of uncertainty
+  confidence_level: 'moderate' | 'low' | 'critical'
+  verification_pointer: string // specific source, report, or search query for verification
+  depends_on: string | null    // id of another flag this depends on, or null
   startIndex: number           // character position in response for underlining
   endIndex: number
   userFeedback?: 'verified' | 'not_helpful'

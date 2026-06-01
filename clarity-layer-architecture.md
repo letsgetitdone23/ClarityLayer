@@ -15,10 +15,10 @@ Clarity Layer is an advanced chat interface designed to explicitly model AI unce
 - `/components/ChatArea.tsx` — Main container for the message thread and user input box.
 - `/components/MessageBubble.tsx` — Renders individual messages, handles markdown parsing, inline popovers, and Clarity integration.
 - `/components/ClarityPanel.tsx` — Collapsible panel attached to AI messages housing Confidence and Assumptions tabs.
-- `/components/ConfidenceTab.tsx` — Tab rendering uncertain sentences with feedback toggles.
+- `/components/ConfidenceTab.tsx` — Tab rendering uncertain sentences with three confidence levels (critical/low/moderate), dependency chain grouping, verification pointers, and feedback toggles.
 - `/components/AssumptionsTab.tsx` — Tab rendering AI assumptions with inline editing and regeneration triggers.
 - `/components/FeedbackBar.tsx` — Global feedback footer shown on AI messages.
-- `/components/InlinePopover.tsx` — Floating tooltip for underlined uncertain sentences in the message body.
+- `/components/InlinePopover.tsx` — Floating tooltip for underlined uncertain sentences showing confidence level, reason, and verification pointer.
 - `/components/FirstTimeTooltip.tsx` — Educational tooltip attached to the first Clarity pill.
 - `/components/ThemeToggle.tsx` — Small Sun/Moon theme toggle button to switch modes.
 - `/hooks/useChat.ts` — Core React hook managing session history, message streaming, and clarity state updates.
@@ -48,7 +48,16 @@ You are a clarity analysis engine. Given an AI response and the user's original 
 
 Return ONLY valid JSON in this exact format:
 {
-  "flags": [ ... ],
+  "flags": [
+    {
+      "id": "f1",
+      "sentence": "exact sentence copied from the response",
+      "reason": "one line explanation, max 15 words, plain English",
+      "confidence_level": "moderate" | "low" | "critical",
+      "verification_pointer": "specific source, report, or search query — max 15 words",
+      "depends_on": "f2" | null
+    }
+  ],
   "assumptions": [
     {
       "id": "a1",
@@ -59,6 +68,10 @@ Return ONLY valid JSON in this exact format:
   ]
 }
 ```
+- **New flag fields**:
+  - `confidence_level`: `"critical"` (load-bearing, conclusion changes if wrong), `"low"` (supporting claim, not the hinge point), or `"moderate"` (context/colour, output valid even if wrong).
+  - `verification_pointer`: Specific, actionable pointer (report, database, search query). Must never be vague (e.g., "verify online").
+  - `depends_on`: ID of another flag this claim depends on, or `null` if the claim stands independently. Used to build dependency chains in the UI.
 - **Sentence matching logic**: Uses `accumulatedText.indexOf(f.sentence)` to find character indices in the frontend state, which are then used to underline matching substrings inside `MessageBubble`.
 - **ClarityData state shape**:
 ```typescript
@@ -92,16 +105,47 @@ export interface ClarityData {
 - **Edge cases handled**: Graceful error UI fallback if the Clarity API times out or hallucinates invalid JSON.
 
 ## 8. Additional Changes (Post-Phase 5)
-- **AssumptionsTab — Updated Editing Flow (Phase 4 — Clarity Panel)**:
-  - Each assumption shows impact level (high/medium/low) as colored dot + label
-  - Clicking ✎ Change expands edit area with two inputs:
-    a) Smart suggestion chips (2-3 alternatives from Clarity API) — tap to select instantly, amber filled when selected
-    b) "Something else?" free text input — type own correction, chip-and-text are mutually exclusive
-  - Cancel collapses edit area without saving
-  - Regenerate button inactive until at least one correction made
-  - Active state: amber button "Regenerate with corrections →"
-  - Inactive state: gray button "Select or type a correction above"
-  - Regeneration injects: "original → correction" pairs into Groq system prompt
+
+### Confidence Flags — Three Confidence Levels
+Each flag now has a `confidence_level` field that drives visual treatment across the UI:
+
+| Level | Meaning | Underline Style | Card Border | Card Background | Dot + Label |
+|-------|---------|-----------------|-------------|-----------------|-------------|
+| `critical` | Load-bearing — conclusion changes if wrong | 2px solid red-500 | 3px red-500 | red-50 / red-950 | Red dot + "Critical" |
+| `low` | Supporting claim — not the hinge point | 2px solid amber-500 | 3px amber-500 | amber-50 / amber-950 | Amber dot + "Should verify" |
+| `moderate` | Context/colour — output valid even if wrong | 2px dashed amber-400 | 3px gray-300 | gray-50 / gray-900 | Gray dot + "Worth checking" |
+
+### Verification Pointer
+Each flag includes a `verification_pointer` field — a specific, actionable source (report, database, search query) the user can consult. Rendered as a white-background inset box labeled "Verify via" in both the ConfidenceTab flag card and the InlinePopover.
+
+### Dependency Chain Grouping
+Flags support a `depends_on` field pointing to another flag's ID. The ConfidenceTab groups flags into a tree:
+- **Root flags**: `depends_on` is `null` — rendered first.
+- **Child flags**: `depends_on` matches a root flag's ID — rendered indented beneath the parent with a dashed left border and a "depends on above" label in 10px uppercase gray.
+- Flags referencing a non-existent parent are treated as roots.
+
+### Summary Bar
+Above flags, a summary bar shows "N flags" and, if any are critical: "· N critical — verify before acting" in red-600 font-medium. Empty state shows: "✓ No uncertain claims in this response".
+
+### InlinePopover Updates
+The popover now shows four pieces of information:
+1. "Claude is less certain here" header
+2. Confidence level dot + label (Critical / Should verify / Worth checking)
+3. The flagged sentence in italic + the reason
+4. "Verify via: [verification_pointer]" in a small inset box
+
+Retains "See all flags" and "✓ Helpful" action buttons.
+
+### AssumptionsTab — Updated Editing Flow (Phase 4 — Clarity Panel)
+- Each assumption shows impact level (high/medium/low) as colored dot + label
+- Clicking ✎ Change expands edit area with two inputs:
+  a) Smart suggestion chips (2-3 alternatives from Clarity API) — tap to select instantly, amber filled when selected
+  b) "Something else?" free text input — type own correction, chip-and-text are mutually exclusive
+- Cancel collapses edit area without saving
+- Regenerate button inactive until at least one correction made
+- Active state: amber button "Regenerate with corrections →"
+- Inactive state: gray button "Select or type a correction above"
+- Regeneration injects: "original → correction" pairs into Groq system prompt
 - **UI Design Implementation & Flow Wiring**: Imported the provided UI designs (Page 1 and Page 2) and implemented the following wired flow:
   1. **App loads**: `ChatInterface.tsx` checks `localStorage` for `clarity_user_name`. If missing, it shows the Landing Page (`Onboarding.tsx`).
   2. **Name Entry**: User enters their name and clicks "Let's go". This saves the name to `localStorage` and transitions seamlessly to the Home screen.
