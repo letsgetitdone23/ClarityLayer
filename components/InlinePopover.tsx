@@ -38,7 +38,8 @@ export default function InlinePopover({
   onSeeAllFlags,
   onMarkVerified,
 }: InlinePopoverProps) {
-  const popoverRef = useRef<HTMLDivElement>(null);
+  const desktopRef = useRef<HTMLDivElement>(null);
+  const mobileRef = useRef<HTMLDivElement>(null);
   const level = flag.confidence_level || 'moderate';
   const config = levelConfig[level];
 
@@ -54,7 +55,10 @@ export default function InlinePopover({
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      const insideDesktop = desktopRef.current?.contains(target);
+      const insideMobile = mobileRef.current?.contains(target);
+      if (!insideDesktop && !insideMobile) {
         onClose();
       }
     };
@@ -148,7 +152,7 @@ export default function InlinePopover({
     <>
       {/* Desktop: absolute positioned popover above the underline */}
       <div
-        ref={popoverRef}
+        ref={desktopRef}
         style={{ left: `${x}px`, top: `${y}px` }}
         className="hidden md:block absolute z-30 w-72 bg-white dark:bg-[#2A2A28] border border-[#D1D1CF] dark:border-[#3A3A38] rounded-xl shadow-xl dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)] p-4 -mt-2.5 -translate-x-1/2 -translate-y-full select-none text-[13px] text-[#1A1A19] dark:text-[#F0EFEC]"
       >
@@ -171,7 +175,7 @@ export default function InlinePopover({
         />
         {/* Sheet */}
         <div
-          ref={popoverRef}
+          ref={mobileRef}
           className="absolute bottom-0 left-0 right-0 bg-white dark:bg-[#2A2A28] border-t border-[#D1D1CF] dark:border-[#3A3A38] rounded-t-2xl shadow-xl dark:shadow-[0_-4px_16px_rgba(0,0,0,0.4)] p-4 pb-6 select-none text-[13px] text-[#1A1A19] dark:text-[#F0EFEC] animate-slide-up"
         >
           {/* Drag handle */}
