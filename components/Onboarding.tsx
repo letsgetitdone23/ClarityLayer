@@ -46,7 +46,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
       </div>
 
       {/* Main card */}
-      <div className="flex flex-col items-center max-w-[420px] w-full mx-4 px-10 py-10 bg-white dark:bg-[#2A2A28] border border-[#E5E5E3] dark:border-[#3A3A38] shadow-[0_8px_40px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.4)] rounded-[16px] relative z-10">
+      <div className="flex flex-col items-center w-[90%] max-w-sm md:max-w-[420px] px-6 py-8 md:px-10 md:py-10 bg-white dark:bg-[#2A2A28] border border-[#E5E5E3] dark:border-[#3A3A38] shadow-[0_8px_40px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.4)] rounded-[16px] relative z-10">
         {/* Amber sparkle icon */}
         <div className="mb-3 text-[#D4881E]">
           <Sparkle className="w-7 h-7" />

@@ -46,7 +46,7 @@ export default function MessageBubble({
       <div className={`w-full ${isUser ? 'max-w-[75%]' : 'max-w-[100%]'}`}>
         {isUser ? (
           <div className="flex flex-col items-end">
-            <div className="bg-[#EEECEA] dark:bg-[#2A2A28] border border-[#E5E5E3] dark:border-[#3A3A38] text-[#1A1A19] dark:text-[#F0EFEC] px-4 py-3 rounded-[16px_16px_4px_16px] shadow-sm text-[15px] leading-relaxed whitespace-pre-wrap">
+            <div className="bg-[#EEECEA] dark:bg-[#2A2A28] border border-[#E5E5E3] dark:border-[#3A3A38] text-[#1A1A19] dark:text-[#F0EFEC] px-4 py-3 rounded-[12px_12px_3px_12px] md:rounded-[16px_16px_4px_16px] shadow-sm text-[15px] leading-relaxed whitespace-pre-wrap">
               {message.content}
             </div>
           </div>
@@ -110,19 +110,46 @@ export default function MessageBubble({
                 </div>
               )}
 
-              {/* Clarity Sliding Panel */}
+              {/* Clarity Sliding Panel — bottom sheet on mobile, inline on desktop */}
               {isOpen && message.clarity && !message.clarity.isLoading && !message.clarity.isError && (
-                <ClarityPanel
-                  message={message}
-                  activeTab={activeTab}
-                  onTabChange={setActiveTab}
-                  onClose={closePanel}
-                  onUpdateFeedback={onUpdateFlagFeedback}
-                  onToggleEdit={onToggleEdit}
-                  onUpdateAssumption={onUpdateAssumption}
-                  onRegenerate={onRegenerate}
-                  onSubmitFeedback={onSubmitFeedback}
-                />
+                <>
+                  {/* Mobile: fixed full-screen overlay + bottom sheet */}
+                  <div className="md:hidden fixed inset-0 z-50">
+                    <div
+                      className="absolute inset-0 bg-black/40"
+                      onClick={closePanel}
+                    />
+                    <div className="absolute bottom-0 left-0 right-0">
+                      <ClarityPanel
+                        message={message}
+                        activeTab={activeTab}
+                        onTabChange={setActiveTab}
+                        onClose={closePanel}
+                        onUpdateFeedback={onUpdateFlagFeedback}
+                        onToggleEdit={onToggleEdit}
+                        onUpdateAssumption={onUpdateAssumption}
+                        onRegenerate={onRegenerate}
+                        onSubmitFeedback={onSubmitFeedback}
+                        isMobile
+                      />
+                    </div>
+                  </div>
+
+                  {/* Desktop: inline absolute panel inside card */}
+                  <div className="hidden md:block">
+                    <ClarityPanel
+                      message={message}
+                      activeTab={activeTab}
+                      onTabChange={setActiveTab}
+                      onClose={closePanel}
+                      onUpdateFeedback={onUpdateFlagFeedback}
+                      onToggleEdit={onToggleEdit}
+                      onUpdateAssumption={onUpdateAssumption}
+                      onRegenerate={onRegenerate}
+                      onSubmitFeedback={onSubmitFeedback}
+                    />
+                  </div>
+                </>
               )}
             </div>
           </div>

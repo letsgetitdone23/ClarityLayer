@@ -62,12 +62,9 @@ export default function InlinePopover({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [onClose]);
 
-  return (
-    <div
-      ref={popoverRef}
-      style={{ left: `${x}px`, top: `${y}px` }}
-      className="absolute z-30 w-72 bg-white dark:bg-[#2A2A28] border border-[#D1D1CF] dark:border-[#3A3A38] rounded-xl shadow-xl dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)] p-4 -mt-2.5 -translate-x-1/2 -translate-y-full select-none text-[13px] text-[#1A1A19] dark:text-[#F0EFEC]"
-    >
+  // Shared popover content
+  const popoverContent = (
+    <>
       {/* Popover Header */}
       <div className="flex items-center justify-between pb-2 border-b border-[#E5E5E3] dark:border-b-[#3A3A38] mb-2">
         <div className="flex items-center space-x-1.5 text-amber-600 dark:text-amber-500 font-semibold">
@@ -144,10 +141,46 @@ export default function InlinePopover({
           ✓ Helpful
         </button>
       </div>
+    </>
+  );
 
-      {/* Bottom pointer arrow pointing down to the sentence */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-[8px] w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-white dark:border-t-[#2A2A28]" />
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-[9px] w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-[#D1D1CF] dark:border-t-[#3A3A38] -z-10" />
-    </div>
+  return (
+    <>
+      {/* Desktop: absolute positioned popover above the underline */}
+      <div
+        ref={popoverRef}
+        style={{ left: `${x}px`, top: `${y}px` }}
+        className="hidden md:block absolute z-30 w-72 bg-white dark:bg-[#2A2A28] border border-[#D1D1CF] dark:border-[#3A3A38] rounded-xl shadow-xl dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)] p-4 -mt-2.5 -translate-x-1/2 -translate-y-full select-none text-[13px] text-[#1A1A19] dark:text-[#F0EFEC]"
+      >
+        {popoverContent}
+
+        {/* Bottom pointer arrow pointing down to the sentence */}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-[8px] w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-white dark:border-t-[#2A2A28]" />
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-[9px] w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-[#D1D1CF] dark:border-t-[#3A3A38] -z-10" />
+      </div>
+
+      {/* Mobile: fixed bottom sheet */}
+      <div className="md:hidden fixed inset-0 z-50">
+        {/* Backdrop */}
+        <div
+          className="absolute inset-0 bg-black/40"
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+          }}
+        />
+        {/* Sheet */}
+        <div
+          ref={popoverRef}
+          className="absolute bottom-0 left-0 right-0 bg-white dark:bg-[#2A2A28] border-t border-[#D1D1CF] dark:border-[#3A3A38] rounded-t-2xl shadow-xl dark:shadow-[0_-4px_16px_rgba(0,0,0,0.4)] p-4 pb-6 select-none text-[13px] text-[#1A1A19] dark:text-[#F0EFEC] animate-slide-up"
+        >
+          {/* Drag handle */}
+          <div className="flex justify-center mb-3">
+            <div className="w-10 h-1 rounded-full bg-gray-300 dark:bg-gray-600" />
+          </div>
+          {popoverContent}
+        </div>
+      </div>
+    </>
   );
 }

@@ -11,7 +11,8 @@ import {
   Code,
   Coffee,
   X,
-  Info
+  Info,
+  Menu
 } from 'lucide-react';
 import { Message } from '../lib/types';
 import MessageBubble from './MessageBubble';
@@ -30,6 +31,7 @@ interface ChatAreaProps {
   onUpdateAssumption: (messageId: string, assumptionId: string, newText: string) => void;
   onRegenerate: (messageId: string) => void;
   onSubmitFeedback: (messageId: string, feedback: 'helpful' | 'somewhat' | 'not_really') => void;
+  onOpenSidebar?: () => void;
 }
 
 /* Custom SVG Waveform Icon to match the Page 2 mockup */
@@ -59,6 +61,7 @@ export default function ChatArea({
   onUpdateAssumption,
   onRegenerate,
   onSubmitFeedback,
+  onOpenSidebar,
 }: ChatAreaProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -106,15 +109,24 @@ export default function ChatArea({
   return (
     <div className="flex-1 flex flex-col h-full bg-[#EEECEA] dark:bg-[#1A1A19] overflow-hidden relative font-sans">
       {/* Top Header Bar */}
-      <header className="h-11 flex items-center justify-between px-5 bg-[#EEECEA] dark:bg-[#1A1A19] border-b border-transparent dark:border-b-[#3A3A38] relative z-20 flex-shrink-0 select-none">
-        <div className="flex-1" />
+      <header className="h-11 flex items-center justify-between px-3 md:px-5 bg-[#EEECEA] dark:bg-[#1A1A19] border-b border-transparent dark:border-b-[#3A3A38] relative z-20 flex-shrink-0 select-none">
+        <div className="flex items-center gap-2 flex-1">
+          {/* Mobile hamburger */}
+          <button
+            onClick={onOpenSidebar}
+            className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-[#E3E1DE] dark:hover:bg-[#2F2F2D] rounded-md transition-colors md:hidden"
+          >
+            <Menu className="w-5 h-5 text-[#6B6B6A] dark:text-[#9B9B99]" />
+          </button>
+        </div>
         {/* Clarity Layer active indicator — top center */}
         <div className="flex items-center gap-1.5 text-[12px] text-[#B45309] font-medium">
           <Sparkle className="w-3 h-3 text-[#D4881E]" />
-          <span>Clarity Layer active</span>
+          <span className="hidden sm:inline">Clarity Layer active</span>
+          <span className="sm:hidden">Clarity</span>
         </div>
-        <div className="flex-1 flex justify-end items-center gap-3">
-          <span className="text-[12px] text-[#9B9B99] font-medium">
+        <div className="flex-1 flex justify-end items-center gap-2 md:gap-3">
+          <span className="text-[12px] text-[#9B9B99] font-medium hidden sm:inline">
             Free plan <span className="mx-1 text-[#D1D1CF] dark:text-[#3A3A38]">·</span>{' '}
             <button className="text-[#1A1A19] dark:text-[#F0EFEC] hover:underline transition-colors font-semibold">Upgrade</button>
           </span>
@@ -129,10 +141,10 @@ export default function ChatArea({
       <div className="flex-1 overflow-y-auto relative z-10 custom-scrollbar flex flex-col">
         {messages.length === 0 ? (
           /* ──── Welcome Empty State (Page 2 design) ──── */
-          <div className="flex-1 flex flex-col items-center justify-center max-w-[700px] mx-auto w-full px-6 py-8 gap-6 my-auto select-none">
+          <div className="flex-1 flex flex-col items-center justify-center max-w-[700px] mx-auto w-full px-4 md:px-6 py-6 md:py-8 gap-4 md:gap-6 my-auto select-none">
             {/* Greeting heading */}
-            <h1 className="text-[38px] font-serif font-normal text-[#1A1A19] dark:text-[#F0EFEC] tracking-tight text-center leading-[1.2]">
-              <Sparkle className="w-6 h-6 text-[#D4881E] inline-block align-baseline mr-2 -mt-1" />
+            <h1 className="text-[26px] md:text-[38px] font-serif font-normal text-[#1A1A19] dark:text-[#F0EFEC] tracking-tight text-center leading-[1.2]">
+              <Sparkle className="w-5 h-5 md:w-6 md:h-6 text-[#D4881E] inline-block align-baseline mr-2 -mt-1" />
               <span className="text-[#D4881E]">Hey {userName || 'there'},</span>{' '}
               what are we thinking through today?
             </h1>
@@ -232,8 +244,8 @@ export default function ChatArea({
           </div>
         ) : (
           /* ──── Scrollable Message Thread ──── */
-          <div className="flex-1 px-6 py-8">
-            <div className="max-w-[720px] mx-auto w-full space-y-6">
+          <div className="flex-1 px-3 md:px-6 py-4 md:py-8">
+            <div className="w-full md:max-w-[720px] mx-auto space-y-4 md:space-y-6">
               {messages.map((message, index) => (
                 <MessageBubble
                   key={message.id}
@@ -271,8 +283,8 @@ export default function ChatArea({
 
       {/* Docked bottom input bar (only visible when there are messages) */}
       {messages.length > 0 && (
-        <div className="bg-[#EEECEA] dark:bg-[#1A1A19] border-t border-[#E5E5E3] dark:border-t-[#3A3A38] px-6 py-4 relative z-10">
-          <form onSubmit={handleSubmit} className="max-w-[720px] mx-auto w-full relative">
+        <div className="bg-[#EEECEA] dark:bg-[#1A1A19] border-t border-[#E5E5E3] dark:border-t-[#3A3A38] px-3 md:px-6 py-3 md:py-4 relative z-10">
+          <form onSubmit={handleSubmit} className="w-full md:max-w-[720px] mx-auto relative">
             <div className="relative flex flex-col border border-[#E5E5E3] dark:border-[#3A3A38] focus-within:border-[#C5C5C3] dark:focus-within:border-[#6B6B6A] rounded-2xl bg-white dark:bg-[#2A2A28] p-3 shadow-[0_2px_12px_rgba(0,0,0,0.02)] transition-all duration-200">
               <textarea
                 ref={textareaRef}
@@ -319,7 +331,7 @@ export default function ChatArea({
 
       {/* ──── Bottom Clarity Layer Banner (dismissible) ──── */}
       {showBanner && (
-        <div className="bg-[#EEECEA] dark:bg-[#1A1A19] px-6 pb-5 pt-1 flex justify-center items-center select-none flex-shrink-0">
+        <div className="bg-[#EEECEA] dark:bg-[#1A1A19] px-3 md:px-6 pb-3 md:pb-5 pt-1 flex justify-center items-center select-none flex-shrink-0">
           <div className="bg-white dark:bg-[#2A2A28] border border-[#E5E5E3] dark:border-[#3A3A38] rounded-xl px-4 py-3 flex items-center justify-between w-full max-w-[720px] shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
             <div className="flex items-center gap-2.5 text-[12px] text-[#6B6B6A] dark:text-[#9B9B99] leading-snug flex-1 min-w-0">
               <Sparkle className="w-3.5 h-3.5 text-[#D4881E] flex-shrink-0" />

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
+import { Menu } from 'lucide-react';
 import Sidebar from './Sidebar';
 import ChatArea from './ChatArea';
 import Onboarding from './Onboarding';
@@ -9,6 +10,7 @@ import { useChat } from '../hooks/useChat';
 export default function ChatInterface() {
   const [userName, setUserName] = useState<string | null>(null);
   const [isLoadingName, setIsLoadingName] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Toast state
   const [toastVisible, setToastVisible] = useState(false);
@@ -78,17 +80,29 @@ export default function ChatInterface() {
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-[#EEECEA] dark:bg-[#1A1A19] text-[#1A1A19] dark:text-[#F0EFEC] font-sans antialiased">
-      {/* Left Sidebar */}
-      <Sidebar
-        chats={chats}
-        currentChatId={currentChat ? currentChat.id : null}
-        onNewChat={handleNewChat}
-        onSelectChat={selectChat}
-        userName={userName}
-      />
+      {/* Mobile sidebar backdrop */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-40 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* Left Sidebar — always visible on md+, slide-over on mobile */}
+      <div className={`fixed inset-y-0 left-0 z-50 transform transition-transform duration-[250ms] ease md:relative md:translate-x-0 md:z-auto ${
+        isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}>
+        <Sidebar
+          chats={chats}
+          currentChatId={currentChat ? currentChat.id : null}
+          onNewChat={() => { handleNewChat(); setIsSidebarOpen(false); }}
+          onSelectChat={(id) => { selectChat(id); setIsSidebarOpen(false); }}
+          userName={userName}
+        />
+      </div>
 
       {/* Right Chat Area */}
-      <main className="flex-1 h-full overflow-hidden flex flex-col">
+      <main className="flex-1 h-full overflow-hidden flex flex-col min-w-0">
         <ChatArea
           userName={userName}
           messages={messages}
@@ -102,6 +116,7 @@ export default function ChatInterface() {
           onUpdateAssumption={updateAssumption}
           onRegenerate={regenerateWithCorrections}
           onSubmitFeedback={submitClarityFeedback}
+          onOpenSidebar={() => setIsSidebarOpen(true)}
         />
       </main>
 

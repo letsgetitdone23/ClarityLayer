@@ -86,6 +86,27 @@ body {
 
 html {
   transition: background-color 200ms ease, color 200ms ease;
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* Mobile bottom sheet slide-up animation */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 250ms ease;
 }
 
 * {

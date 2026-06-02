@@ -23,7 +23,7 @@ interface SidebarProps {
 
 export default function Sidebar({ chats, currentChatId, onNewChat, onSelectChat, userName }: SidebarProps) {
   return (
-    <aside className="w-[195px] h-full bg-[#EEECEA] dark:bg-[#1F1F1E] border-r border-[#E5E5E3] dark:border-r-[#3A3A38] flex flex-col select-none flex-shrink-0 font-sans">
+    <aside className="w-[195px] h-full bg-[#EEECEA] dark:bg-[#1F1F1E] border-r border-[#E5E5E3] dark:border-r-[#3A3A38] flex flex-col select-none flex-shrink-0 font-sans shadow-lg md:shadow-none">
       {/* Brand Header */}
       <div className="px-4 pt-4 pb-2 flex items-center justify-between">
         <span className="font-serif text-[18px] font-bold text-[#1A1A19] dark:text-[#F0EFEC] tracking-tight">Claude</span>
