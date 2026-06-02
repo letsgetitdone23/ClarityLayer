@@ -110,45 +110,25 @@ export default function MessageBubble({
                 </div>
               )}
 
-              {/* Clarity Sliding Panel — bottom sheet on mobile, inline on desktop */}
+              {/* Clarity Panel — single instance, adapts via responsive classes inside ClarityPanel */}
               {isOpen && message.clarity && !message.clarity.isLoading && !message.clarity.isError && (
                 <>
-                  {/* Mobile: fixed full-screen overlay + bottom sheet */}
-                  <div className="md:hidden fixed inset-0 z-50">
-                    <div
-                      className="absolute inset-0 bg-black/40"
-                      onClick={closePanel}
-                    />
-                    <div className="absolute bottom-0 left-0 right-0">
-                      <ClarityPanel
-                        message={message}
-                        activeTab={activeTab}
-                        onTabChange={setActiveTab}
-                        onClose={closePanel}
-                        onUpdateFeedback={onUpdateFlagFeedback}
-                        onToggleEdit={onToggleEdit}
-                        onUpdateAssumption={onUpdateAssumption}
-                        onRegenerate={onRegenerate}
-                        onSubmitFeedback={onSubmitFeedback}
-                        isMobile
-                      />
-                    </div>
-                  </div>
-
-                  {/* Desktop: inline absolute panel inside card */}
-                  <div className="hidden md:block">
-                    <ClarityPanel
-                      message={message}
-                      activeTab={activeTab}
-                      onTabChange={setActiveTab}
-                      onClose={closePanel}
-                      onUpdateFeedback={onUpdateFlagFeedback}
-                      onToggleEdit={onToggleEdit}
-                      onUpdateAssumption={onUpdateAssumption}
-                      onRegenerate={onRegenerate}
-                      onSubmitFeedback={onSubmitFeedback}
-                    />
-                  </div>
+                  {/* Mobile-only overlay backdrop — tap to close */}
+                  <div
+                    className="md:hidden fixed inset-0 bg-black/40 z-40"
+                    onClick={closePanel}
+                  />
+                  <ClarityPanel
+                    message={message}
+                    activeTab={activeTab}
+                    onTabChange={setActiveTab}
+                    onClose={closePanel}
+                    onUpdateFeedback={onUpdateFlagFeedback}
+                    onToggleEdit={onToggleEdit}
+                    onUpdateAssumption={onUpdateAssumption}
+                    onRegenerate={onRegenerate}
+                    onSubmitFeedback={onSubmitFeedback}
+                  />
                 </>
               )}
             </div>
